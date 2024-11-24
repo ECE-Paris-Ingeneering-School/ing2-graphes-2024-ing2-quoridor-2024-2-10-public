@@ -1,3 +1,4 @@
+//graphe oriente savane
 digraph SavaneGrapheEtendu {
     1 [label="Herbes"];
     2 [label="Arbustes"];
@@ -19,7 +20,7 @@ digraph SavaneGrapheEtendu {
     18 [label="Chacals"];
     19 [label="Crocodiles"];
     20 [label="Vautours"];
-    21 [label="Marabouts"];
+    21 [label="Marabouts"]; 
 
     5 -> 1 [label="20%"];
     6 -> 1 [label="15%"];
@@ -52,3 +53,4 @@ digraph SavaneGrapheEtendu {
     21 -> 16 [label="8%"];
     21 -> 17 [label="6%"];
 }
+// 1ere partie sommets avec les animaux et la vegetation
