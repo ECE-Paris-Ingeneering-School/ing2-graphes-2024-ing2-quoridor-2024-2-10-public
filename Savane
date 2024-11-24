@@ -54,3 +54,4 @@ digraph SavaneGrapheEtendu {
     21 -> 17 [label="6%"];
 }
 // 1ere partie sommets avec les animaux et la vegetation
+//aretes avec le poids et l'orientation de chaque arete 
