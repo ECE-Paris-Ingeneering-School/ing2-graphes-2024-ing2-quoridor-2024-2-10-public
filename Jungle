@@ -1,3 +1,4 @@
+//Graphe pondere de la Jungle 
 digraph JungleGraphe {
     1 [label="Herbes"];
     2 [label="Fruits"];
