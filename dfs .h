@@ -8,9 +8,9 @@
 
 // Structure du graphe
 typedef struct {
-    int numVertices;      // Nombre de sommets
-    int** adjMatrix;      // Matrice d'adjacence (poids des aretes)
-    bool* visited;        // Marqueurs pour DFS
+    int numVertices;      // Le nombre de sommets
+    int** adjMatrix;      // La matrice d'adjacence (poids des aretes)
+    bool* visited;        // Les marqueurs pour DFS
 } Graphe;
 
 // Fonctions de gestion du graphe
