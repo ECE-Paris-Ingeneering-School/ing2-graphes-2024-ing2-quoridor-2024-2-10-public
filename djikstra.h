@@ -1,23 +1,15 @@
-#ifndef DIJKSTRA_H
-#define DIJKSTRA_H
+#ifndef PROJET_INGE2_DIJKSTRA_H
+#define PROJET_INGE2_DIJKSTRA_H
 
-#define INF 1000000  // Représente une valeur infinie pour les distances non atteignables
+#include "graphe1.h"
 
-// Structure pour représenter une arête dans le graphe
 typedef struct {
-    int source;
-    int destination;
-    int poids;
-} Arete;
+    int* distances;
+    int* predecesseurs;
+} DijkstraResultat;
 
-// Structure pour représenter un graphe
-typedef struct {
-    int nombre_sommets;
-    int nombre_aretes;
-    Arete* aretes;
-} Graphe;
+DijkstraResultat* dijkstra(Graphe* graphe, int sommetDepart);
+void afficherResultatsDijkstra(DijkstraResultat* resultat, int sommetArrivee, Graphe* graphe);
+void libererResultatsDijkstra(DijkstraResultat* resultat, Graphe* graphe);
 
-// Fonction pour trouver le plus court chemin à partir du sommet source avec l'algorithme de Dijkstra
-void dijkstra(Graphe* graphe, int sommet_source);
-
-#endif
+#endif //PROJET_INGE2_DIJKSTRA_H
