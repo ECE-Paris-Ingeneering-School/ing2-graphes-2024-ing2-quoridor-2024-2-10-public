@@ -1,86 +1,37 @@
+#include <stdio.h>
 #include "graphe1.h"
+#include "dijkstra.h"
 
 int main() {
     char filename[100];
-
-    // Demander le nom du fichier
+    int numVertices, numEdges;
     printf("Entrez le nom du fichier contenant les aretes du graphe : ");
     scanf("%s", filename);
 
-    // Ouvrir le fichier
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        fprintf(stderr, "Erreur : Impossible d'ouvrir le fichier '%s'. Verifiez le nom et l'emplacement du fichier.\n", filename);
+    Graphe* graphe = chargerGrapheDepuisFichier(filename);
+
+    if (graphe == NULL) {
+        fprintf(stderr, "Echec du chargement du graphe.\n");
         return EXIT_FAILURE;
     }
 
-    // Lire le nombre de sommets et d'aretes
-    int numVertices, numEdges;
-    if (fscanf(file, "%d %d", &numVertices, &numEdges) != 2) {
-        fprintf(stderr, "Erreur : Format incorrect dans le fichier '%s'. La premiere ligne doit contenir le nombre de sommets et d'aretes.\n", filename);
-        fclose(file);
-        return EXIT_FAILURE;
-    }
+    int startVertex, endVertex;
+    printf("Entrez le sommet de depart pour Dijkstra : ");
+    scanf("%d", &startVertex);
+    printf("Entrez le sommet d'arrivee pour Dijkstra : ");
+    scanf("%d", &endVertex);
 
-    // Creer le graphe
-    Graphe* graphe = creerGraphe(numVertices);
-
-    // Lire les aretes
-    for (int i = 0; i < numEdges; i++) {
-        int src, dest, poids;
-        if (fscanf(file, "%d %d %d", &src, &dest, &poids) != 3) {
-            fprintf(stderr, "Erreur : Format incorrect pour les aretes dans le fichier '%s'.\n", filename);
-            libererGraphe(graphe);
-            fclose(file);
-            return EXIT_FAILURE;
-        }
-        ajouterArete(graphe, src, dest, poids);
-    }
-
-    fclose(file);
-
-    // Demander le sommet de depart pour le DFS
-    int startVertex;
-    printf("Entrez le sommet de depart pour le DFS : ");
-    if (scanf("%d", &startVertex) != 1 || startVertex < 0 || startVertex >= numVertices) {
-        fprintf(stderr, "Erreur : Le sommet de depart est invalide. Il doit etre entre 0 et %d.\n", numVertices - 1);
+    DijkstraResultat* resultat = dijkstra(graphe, startVertex);
+    if (resultat == NULL) {
         libererGraphe(graphe);
         return EXIT_FAILURE;
     }
 
-    // Initialiser les predecesseurs, distances et chemin
-    int* predecesseurs = (int*)malloc(numVertices * sizeof(int));
-    int* distances = (int*)malloc(numVertices * sizeof(int));
-    int* chemin = (int*)malloc(numVertices * sizeof(int));
-    int cheminIndex = 0;
+    printf("\nResultats de Dijkstra a partir du sommet %d :\n", startVertex);
+    afficherResultatsDijkstra(resultat, endVertex, graphe);
 
-    for (int i = 0; i < numVertices; i++) {
-        predecesseurs[i] = -1;
-        distances[i] = INT_MAX;
-    }
-    distances[startVertex] = 0;
-
-    // Effectuer le parcours DFS
-    printf("Parcours DFS a partir du sommet %d :\n", startVertex);
-    dfs(graphe, startVertex, predecesseurs, distances, chemin, &cheminIndex);
-
-    // Afficher le chemin et la distance totale
-    printf("\nChemin : ");
-    int distanceTotale = 0;
-    for (int i = 0; i < cheminIndex; i++) {
-        printf("%d", chemin[i]);
-        if (i < cheminIndex - 1) {
-            printf(" -> ");
-            distanceTotale += graphe->adjMatrix[chemin[i]][chemin[i + 1]];
-        }
-    }
-    printf("\nDistance totale : %d\n", distanceTotale);
-
-    // Liberer la memoire
+    libererResultatsDijkstra(resultat, graphe);
     libererGraphe(graphe);
-    free(predecesseurs);
-    free(distances);
-    free(chemin);
 
     return EXIT_SUCCESS;
 }
