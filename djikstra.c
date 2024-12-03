@@ -1,69 +1,93 @@
-#include <stdio.h>
 #include "dijkstra.h"
+#include "graphe1.h"
+#include <stdlib.h>
+#include <limits.h>
 
-// Algorithme de Dijkstra
-void dijkstra(Graphe* graphe, int sommet_source) {
-    int nombre_sommets = graphe->nombre_sommets;
-    int dist[nombre_sommets];  // distances
-    int precedents[nombre_sommets];  // précédents sommets dans le plus court chemin
-    int visite[nombre_sommets];  // sommets visités
+DijkstraResultat* dijkstra(Graphe* graphe, int sommetDepart) {
+    printf("Debut de Dijkstra avec sommet de depart : %d\n", sommetDepart + 1);
 
-    // Initialisation
-    for (int i = 0; i < nombre_sommets; i++) {
-        dist[i] = INF;
-        precedents[i] = -1;
-        visite[i] = 0;
+    DijkstraResultat* resultat = (DijkstraResultat*)malloc(sizeof(DijkstraResultat));
+    if (resultat == NULL) {
+        fprintf(stderr, "Erreur d allocation memoire pour DijkstraResultat.\n");
+        return NULL;
     }
-    dist[sommet_source] = 0;
 
-    // Algorithme de Dijkstra
-    for (int i = 0; i < nombre_sommets - 1; i++) {
+    resultat->distances = (int*)malloc(graphe->numVertices * sizeof(int));
+    resultat->predecesseurs = (int*)malloc(graphe->numVertices * sizeof(int));
+    if (resultat->distances == NULL || resultat->predecesseurs == NULL) {
+        fprintf(stderr, "Erreur d allocation memoire pour les tableaux.\n");
+        free(resultat->distances);
+        free(resultat->predecesseurs);
+        free(resultat);
+        return NULL;
+    }
 
-        int min_dist = INF, min_index = -1;
-        for (int v = 0; v < nombre_sommets; v++) {
-            if (!visite[v] && dist[v] <= min_dist) {
-                min_dist = dist[v];
-                min_index = v;
+    for (int i = 0; i < graphe->numVertices; i++) {
+        resultat->distances[i] = INT_MAX;
+        resultat->predecesseurs[i] = -1;
+        graphe->visited[i] = false;
+    }
+    resultat->distances[sommetDepart] = 0;
+
+    for (int i = 0; i < graphe->numVertices; i++) {
+        int sommetActuel = -1;
+        int minDistance = INT_MAX;
+
+        for (int j = 0; j < graphe->numVertices; j++) {
+            if (!graphe->visited[j] && resultat->distances[j] < minDistance) {
+                minDistance = resultat->distances[j];
+                sommetActuel = j;
             }
         }
 
-        if (min_index == -1) break;
+        if (sommetActuel == -1) {
+            printf("Tous les sommets accessibles ont ete traites.\n");
+            break;
+        }
 
-        // Marquer ce sommet comme visité
-        visite[min_index] = 1;
+        graphe->visited[sommetActuel] = true;
+        printf("Sommet traite : %d avec distance minimale : %d\n", sommetActuel + 1, minDistance);
 
-        for (int j = 0; j < graphe->nombre_aretes; j++) {
-            int u = graphe->aretes[j].source;
-            int v = graphe->aretes[j].destination;
-            int poids = graphe->aretes[j].poids;
-
-            if (u == min_index && !visite[v] && dist[u] + poids < dist[v]) {
-                dist[v] = dist[u] + poids;
-                precedents[v] = u;
-            }
-            if (v == min_index && !visite[u] && dist[v] + poids < dist[u]) {
-                dist[u] = dist[v] + poids;
-                precedents[u] = v;
+        for (int voisin = 0; voisin < graphe->numVertices; voisin++) {
+            int poidsArete = graphe->adjMatrix[sommetActuel][voisin];
+            if (poidsArete != INT_MAX && !graphe->visited[voisin]) {
+                int nouvelleDistance = resultat->distances[sommetActuel] + poidsArete;
+                if (nouvelleDistance < resultat->distances[voisin]) {
+                    resultat->distances[voisin] = nouvelleDistance;
+                    resultat->predecesseurs[voisin] = sommetActuel;
+                    printf("Mise a jour : sommet %d via %d avec nouvelle distance : %d\n", voisin + 1, sommetActuel + 1, nouvelleDistance);
+                }
             }
         }
     }
 
-    // Afficher les résultats
-    printf("Sommet source : %d\n", sommet_source);
-    for (int i = 0; i < nombre_sommets; i++) {
-        if (i != sommet_source && dist[i] != INF) {
-            printf("Plus court chemin vers le sommet %d : distance = %d\n", i, dist[i]);
+    return resultat;
+}
 
-            // Afficher le chemin du sommet source vers ce sommet
-            printf("Chemin : %d", i);
-            int precedent = precedents[i];
-            while (precedent != -1) {
-                printf(" <- %d", precedent);
-                precedent = precedents[precedent];
-            }
-            printf("\n");
-        } else if (dist[i] == INF) {
-            printf("Sommet %d inaccessible depuis le sommet source %d\n", i, sommet_source);
+void afficherResultatsDijkstra(DijkstraResultat* resultat, int sommetArrivee, Graphe* graphe) {
+    if (resultat->distances[sommetArrivee] == INT_MAX) {
+        printf("Pas de chemin entre le sommet de depart et le sommet d'arrivee %d.\n", sommetArrivee);
+    } else {
+        printf("Distance minimale jusqu'au sommet %d : %d\n", sommetArrivee, resultat->distances[sommetArrivee]);
+
+        int chemin[graphe->numVertices];
+        int index = 0;
+        int sommetActuel = sommetArrivee;
+
+        while (sommetActuel != -1) {
+            chemin[index++] = sommetActuel;
+            sommetActuel = resultat->predecesseurs[sommetActuel];
+        }
+
+        printf("Chemin : ");
+        for (int i = index - 1; i >= 0; i--) {
+            printf("%d%s", chemin[i], (i == 0) ? "\n" : " -> ");
         }
     }
+}
+
+void libererResultatsDijkstra(DijkstraResultat* resultat, Graphe* graphe) {
+    free(resultat->distances);
+    free(resultat->predecesseurs);
+    free(resultat);
 }
