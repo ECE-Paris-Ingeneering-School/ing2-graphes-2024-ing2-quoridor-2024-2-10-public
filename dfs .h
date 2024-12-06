@@ -6,19 +6,24 @@
 #include <stdbool.h>
 #include <limits.h>
 
-// Structure du graphe
 typedef struct {
-    int numVertices;      // Le nombre de sommets
-    int** adjMatrix;      // La matrice d'adjacence (poids des aretes)
-    bool* visited;        // Les marqueurs pour DFS
+    int sommet;
+    int** adjMatrix;
+    bool* visite;
+    bool* supprime;
 } Graphe;
 
-// Fonctions de gestion du graphe
-Graphe* creerGraphe(int numVertices);
+Graphe* creerGraphe(int sommet);
 void ajouterArete(Graphe* graphe, int src, int dest, int poids);
 void libererGraphe(Graphe* graphe);
+Graphe* chargerGrapheDepuisFichier(const char* filename);
+void sauvegarderGrapheDansFichier(Graphe* graphe, const char* filename);
+void rechercherSommetsParticuliers(Graphe* graphe);
+int* calculerNiveauxTrophiquesEntiersSansPrecision(Graphe* graphe, float* moyenne);
+void afficherNiveauxTrophiquesEntiersSansPrecision(Graphe* graphe, int* niveaux);
+void calculerCentralites(Graphe* graphe);
+void simulerDisparition(Graphe* graphe, int sommet);
+void dfs(Graphe* graphe, int sommetDepart, int* predecesseurs, int* distances, int* chemin, int* cheminIndex);
 
-// DFS
-void dfs(Graphe* graphe, int startVertex, int* predecesseurs, int* distances, int* chemin, int* cheminIndex);
 
 #endif // GRAPHE1_H
