@@ -1,37 +1,19 @@
-#include <stdio.h>
-#include "graphe1.h"
-#include "dijkstra.h"
+#include "menu.h"
 
 int main() {
-    char filename[100];
-    int numVertices, numEdges;
-    printf("Entrez le nom du fichier contenant les aretes du graphe : ");
-    scanf("%s", filename);
-
-    Graphe* graphe = chargerGrapheDepuisFichier(filename);
-
-    if (graphe == NULL) {
-        fprintf(stderr, "Echec du chargement du graphe.\n");
-        return EXIT_FAILURE;
+    Graphe* graphe = NULL;
+    int choix = 0;
+    int choixx=0;
+    while (choixx!=14) {
+        afficherMenu();
+        scanf("%d", &choix);
+        choixx=gererChoix(choix, &graphe);
     }
 
-    int startVertex, endVertex;
-    printf("Entrez le sommet de depart pour Dijkstra : ");
-    scanf("%d", &startVertex);
-    printf("Entrez le sommet d'arrivee pour Dijkstra : ");
-    scanf("%d", &endVertex);
-
-    DijkstraResultat* resultat = dijkstra(graphe, startVertex);
-    if (resultat == NULL) {
+    if (graphe != NULL) {
         libererGraphe(graphe);
-        return EXIT_FAILURE;
+        graphe = NULL;
     }
-
-    printf("\nResultats de Dijkstra a partir du sommet %d :\n", startVertex);
-    afficherResultatsDijkstra(resultat, endVertex, graphe);
-
-    libererResultatsDijkstra(resultat, graphe);
-    libererGraphe(graphe);
 
     return EXIT_SUCCESS;
 }
