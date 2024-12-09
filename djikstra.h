@@ -1,6 +1,10 @@
-#ifndef PROJET_INGE2_DIJKSTRA_H
-#define PROJET_INGE2_DIJKSTRA_H
+#ifndef INGE2_PROJET_DIJKSTRA_H
+#define INGE2_PROJET_DIJKSTRA_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
 #include "graphe1.h"
 
 typedef struct {
@@ -8,8 +12,8 @@ typedef struct {
     int* predecesseurs;
 } Dijkstra;
 
-Dijkstra* dijkstra(Graphe* graphe, int sommetDepart);
-void afficherResultatsDijkstra(Dijkstra* resultat, int sommetArrivee, Graphe* graphe);
-void libererResultatsDijkstra(Dijkstra* resultat, Graphe* graphe);
+Dijkstra* dijkstra(Sommet* sommets, int nb_sommets, int** adjMatrix, int sommetDepart);
+void afficherResultatsDijkstra(Dijkstra* resultat, Sommet* sommets, int nb_sommets, int sommetArrivee);
+void libererResultatsDijkstra(Dijkstra* resultat);
 
-#endif //PROJET_INGE2_DIJKSTRA_H
+#endif
