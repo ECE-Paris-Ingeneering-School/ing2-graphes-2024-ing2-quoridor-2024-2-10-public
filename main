@@ -1,19 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "menu.h"
+#include "graphe1.h"
 
 int main() {
-    Graphe* graphe = NULL;
-    int choix = 0;
-    int choixx=0;
-    while (choixx!=14) {
+    Sommet* sommets = NULL;      // Tableau des sommets
+    int nb_sommets = 0;          // Nombre total de sommets
+    int** adjMatrix = NULL;      // Matrice d'adjacence pour le graphe
+    int choix = 0;               // Choix de l'utilisateur
+    int quitter = 0;             // Condition pour quitter le programme
+
+    while (!quitter) {
         afficherMenu();
         scanf("%d", &choix);
-        choixx=gererChoix(choix, &graphe);
+        quitter = gererChoix(choix, &sommets, &nb_sommets, &adjMatrix);
     }
 
-    if (graphe != NULL) {
-        libererGraphe(graphe);
-        graphe = NULL;
+    // Libération de la mémoire allouée
+    if (sommets) {
+        free(sommets);
+    }
+    if (adjMatrix) {
+        for (int i = 0; i < nb_sommets; i++) {
+            free(adjMatrix[i]);
+        }
+        free(adjMatrix);
     }
 
+    printf("Fin du programme.\n");
     return EXIT_SUCCESS;
 }
